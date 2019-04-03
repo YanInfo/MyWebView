@@ -21,7 +21,6 @@ import java.util.Random;
 
 public class DownThread implements Runnable {
 
-
     private final static String TAG = "DownThread";
     private String mUrl;
     private Random mRandom = new Random();
