@@ -7,6 +7,9 @@ package com.yaninfo;
  * @Version: 1.0
  */
 
+import android.app.DownloadManager;
+import android.content.Context;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 
@@ -25,6 +28,10 @@ public class DownThread implements Runnable {
     private final static String TAG = "DownThread";
     private String mUrl;
     private Random mRandom = new Random();
+    private DownloadManager mDownloadManager;
+    private Context mContext;
+
+
 
     public DownThread(String dlUrl) {
         this.mUrl = dlUrl;
@@ -87,6 +94,8 @@ public class DownThread implements Runnable {
         }
         Log.e(TAG, "下载完毕#########");
     }
+
+
 
     /**
      * 模拟多线程

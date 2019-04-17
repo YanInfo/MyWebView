@@ -1,5 +1,6 @@
 package com.yaninfo;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,12 +18,16 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static String main;
+
     private WebView mWebView;
     private Button mRefresh;
     private Button mBack;
     private TextView mText;
-    private WebSettings mSetting;
-    private String mUrl;
+    private WebSettings mSetting = null;
+    private String mUrl = null;
+    private DownloadManager mDownloadManager ;
+    private Context mContext;
 
     private String downloadUrl = "http://s1.music.126.net/download/android/CloudMusic_2.8.1_official_4.apk";
 
@@ -30,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mContext = this;
 
         init();
 
@@ -60,16 +66,30 @@ public class MainActivity extends AppCompatActivity {
         mWebView.setDownloadListener(new DownloadListener() {
             @Override
             public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimeType, long contentLength) {
-                Log.e("####对应的url####", "" + url);
+                Log.e("####对应的url####",  "" + url);
                 // 启动线程
                 // 截取url，这里是根据豌豆荚的特点来截取的
                 int i = url.indexOf('?');
                 mUrl = url.substring(0, i);
-                 if (mUrl.endsWith(".apk")) {
-                     DownThread downThread = new DownThread(mUrl);
+                if (mUrl != null) {
+
+                     // 自定义线程下载
+                     /*DownThread downThread = new DownThread(mUrl);
                      Thread thread = new Thread(downThread);
-                     thread.start();
-                 }
+                     thread.start();*/
+
+                     // 系统通知栏下载
+                     final DownloadManager mDownloadManager = new DownloadManager(mContext);
+                     mDownloadManager.setOnProgressListener(new DownloadStatus() {
+                         @Override
+                         public void onProgress(float fraction) {
+                             if (fraction == DownloadManager.DOWN_COMPELETE) {
+                                 mDownloadManager.stop();
+                             }
+                         }
+                     });
+                     mDownloadManager.download(contentDisposition, mUrl);
+                }
             }
         });
 
